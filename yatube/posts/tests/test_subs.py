@@ -1,9 +1,8 @@
-from itertools import count
 from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from ..models import Post, User, Follow
+from ..models import Post, User
 
 User = get_user_model()
 
@@ -58,8 +57,8 @@ class FollowModelTest(TestCase):
         self.assertTrue(response.context['following'])
         # Отписываемся юзером1 на юзера2
         self.authorized_client.post(reverse(
-            'posts:profile_unfollow', kwargs={'username': self.user_2.username}),
-            follow=True
+            'posts:profile_unfollow', kwargs={
+                'username': self.user_2.username}), follow=True
         )
         # Проверяем отписку
         response = self.authorized_client.get(reverse(
