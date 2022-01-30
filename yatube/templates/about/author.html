@@ -1,0 +1,24 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h1>Привет, я автор</h1>
+  <article>
+    <ul>
+      <li>
+        <p>
+          Меня зовут Лера Невская.
+        </p>
+        <p> 
+          Я была учителем, но решила попробовать что-то новое. Надеюсь, все получится! 
+        </p>
+        
+      </li>
+    </ul>
+  </article>
+</div>  
+{% load static %}
+<img src="{% static 'img/me.png' %}" width="300" height="200" class="d-inline-block align-top" alt="">
+{% include 'posts/includes/paginator.html' %}
+{% endblock %}
