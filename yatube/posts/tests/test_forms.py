@@ -176,12 +176,14 @@ class CommentFormTests(TestCase):
             author=cls.author
         )
         cls.form = CommentForm()
+
+    def setUp(self):
         # Создаем неавторизованного пользователя
-        cls.guest_client = Client()
+        self.guest_client = Client()
         # Создаем авторизованного пользователя
-        cls.authorized_client = Client()
+        self.authorized_client = Client()
         # Авторизуем пользователя
-        cls.authorized_client.force_login(cls.author)
+        self.authorized_client.force_login(self.author)
 
     def test_comment_post(self):
         """Тест на создание нового коммента в базе данных"""

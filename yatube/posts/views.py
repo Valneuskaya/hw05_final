@@ -1,24 +1,24 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_GET, require_http_methods
 
 from .forms import PostForm, CommentForm
 from .models import Group, Post, User, Comment, Follow
 
 
-@require_http_methods(["GET"])
+@require_GET
 def index(request):
     posts = Post.objects.all()
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     template = 'posts/index.html'
-    context = {'page_obj': page_obj, }
+    context = {'page_obj': page_obj}
     return render(request, template, context)
 
 
-@require_http_methods(["GET"])
+@require_GET
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     posts = group.group_posts.all()
@@ -33,7 +33,7 @@ def group_posts(request, slug):
     return render(request, template, context)
 
 
-@require_http_methods(["GET"])
+@require_GET
 def profile(request, username):
     # Здесь код запроса к модели и создание словаря контекста
     author = get_object_or_404(User, username=username)
@@ -58,7 +58,7 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm()
-    count = Post.objects.filter(author=post.author).count()
+    count = post.author.group_posts.count()
     comments = Comment.objects.filter(post=post_id)
     template = 'posts/post_detail.html'
     context = {
@@ -82,8 +82,6 @@ def post_create(request):
         post.author = request.user
         post.save()
         return redirect('posts:profile', username=post.author.username)
-    else:
-        print(form.errors)
     template = 'posts/create_post.html'
     return render(request, template, {'form': form, 'groups': groups})
 
@@ -99,7 +97,7 @@ def post_edit(request, post_id):
         instance=post)
     if form.is_valid():
         template = 'posts:post_detail'
-        post.save()
+        form.save()
         return redirect(template, post_id=post.pk)
     groups = Group.objects.all()
     template = 'posts/create_post.html'
@@ -127,8 +125,8 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    post_list = Post.objects.filter(author__following__user=request.user)
-    paginator = Paginator(post_list, 10)
+    post_set = Post.objects.filter(author__following__user=request.user)
+    paginator = Paginator(post_set, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {

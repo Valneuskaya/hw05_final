@@ -21,11 +21,11 @@ class Group(models.Model):
         help_text='Введите описание группы'
     )
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Group'
+
+    def __str__(self):
+        return self.title
 
 
 class Post(models.Model):
@@ -60,12 +60,12 @@ class Post(models.Model):
     # Аргумент upload_to указывает директорию,
     # в которую будут загружаться пользовательские файлы.
 
-    def __str__(self):
-        return self.text[:15]
-
     class Meta:
         verbose_name = 'Post'
         ordering = ['-pub_date']
+
+    def __str__(self):
+        return self.text[:15]
 
 
 class Comment(CreatedModel):
